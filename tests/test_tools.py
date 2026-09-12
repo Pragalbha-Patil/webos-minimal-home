@@ -334,7 +334,7 @@ class InstallerTest(unittest.TestCase):
         self.assertIn("/proc/$watcher/environ", command)
         calls = self.log.read_text()
         self.assertIn("chmod 0777", calls)
-        self.assertIn("-w 300000", calls)
+        self.assertIn("-w 600000", calls)
         self.assertIn("appInstallService/dev/install", calls)
         self.assertIn("elevate-service' org.minimal.home.service", calls)
         self.assertIn("applicationManager/close", calls)

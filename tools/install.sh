@@ -139,9 +139,10 @@ ssh "$REMOTE" "luna-send-pub -n 1 luna://com.webos.applicationManager/close '{\"
 echo "Installing Minimal Home app and service"
 # The install API streams progress. awk exits successfully only after the
 # terminal installed state, and fails on an explicit rejection or timeout.
-# Slow TVs need several minutes from verification to installation.
+# Slow TVs need up to ten minutes from verification to installation; the
+# stream stays open after that, so awk leaves as soon as it sees the state.
 # shellcheck disable=SC2029
-INSTALL_RESPONSE=$(ssh "$REMOTE" "luna-send-pub -w 300000 -i 'luna://com.webos.appInstallService/dev/install' '{\"id\":\"com.ares.defaultName\",\"ipkUrl\":\"$REMOTE_IPK\",\"subscribe\":true}' | awk '/\"state\"[[:space:]]*:[[:space:]]*\"installed\"/{print; ok=1; exit} /\"returnValue\"[[:space:]]*:[[:space:]]*false|\"state\"[[:space:]]*:[[:space:]]*\"[^\"]*failed[^\"]*\"/{print; exit 1} END {if (!ok) exit 1}'")
+INSTALL_RESPONSE=$(ssh "$REMOTE" "luna-send-pub -w 600000 -i 'luna://com.webos.appInstallService/dev/install' '{\"id\":\"com.ares.defaultName\",\"ipkUrl\":\"$REMOTE_IPK\",\"subscribe\":true}' | awk '/\"state\"[[:space:]]*:[[:space:]]*\"installed\"/{print; ok=1; exit} /\"returnValue\"[[:space:]]*:[[:space:]]*false|\"state\"[[:space:]]*:[[:space:]]*\"[^\"]*failed[^\"]*\"/{print; exit 1} END {if (!ok) exit 1}'")
 printf '%s\n' "$INSTALL_RESPONSE"
 
 echo "Applying Homebrew Luna permissions to the relay"
