@@ -840,6 +840,10 @@
         : update[key];
     });
     applyPrefs();
+    if (overlay.mode === "settings")
+      SETTING_ROWS.forEach(function (row) {
+        updateRow(row.key);
+      });
   }
   function loadPrefs() {
     // Compatibility fallback for a relay that does not bundle preferences.
