@@ -35,7 +35,7 @@ module.exports = function (limit) {
             scan(character);
             if (buffer.length > limit) {
                 reset();
-                break;
+                continue;
             }
             if (depth !== 0) continue;
             try {

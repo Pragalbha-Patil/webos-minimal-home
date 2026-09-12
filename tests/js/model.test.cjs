@@ -65,6 +65,7 @@ test('JSON stream handles chunk boundaries, strings, noise, malformed frames and
     assert.deepEqual(parse('{bad}{"b":2}{"c":3}'), [{ b: 2 }, { c: 3 }]);
     assert.deepEqual(parse('{"huge":"' + 'x'.repeat(200)), []);
     assert.deepEqual(parse('{"recovered":true}'), [{ recovered: true }]);
+    assert.deepEqual(stream(20)('{"huge":"' + 'x'.repeat(40) + '"}{"next":true}'), [{ next: true }]);
     const escaped = stream(100);
     const data = JSON.stringify({ value: 'quote" slash\\ }' });
     let objects = [];
