@@ -131,6 +131,20 @@ test('settings cycle choices, toggles and accents; save errors are visible; acti
     app.click('[data-key="close"]'); assert.equal(app.document.querySelector('#settingsPanel').classList.contains('show'), false);
 });
 
+test('failed preference saves do not run action success callbacks', t => {
+    const app = appFor(t);
+    ready(app, { tiles: [video, { id: 'hidden', title: 'Hidden' }], prefs: { hidden: ['hidden'] } });
+    app.click('#settingsBtn');
+    app.click('[data-key="manage"]');
+    app.click('[data-id="hidden"]');
+    const call = app.calls.find(c => c.method === 'setPrefs' && !c.answered);
+    call.answered = true;
+    call.onFailure({ errorText: 'read-only' });
+    assert.ok(app.document.querySelector('#optionsPanel.show'));
+    assert.match(app.document.querySelector('#err').textContent, /read-only/);
+    assert.equal(app.calls.filter(c => c.method === 'getTiles').length, 1);
+});
+
 test('default brand opens a remote-friendly first-run editor and saves the header name', t => {
     const app = appFor(t);
     app.tiles({ tiles: [video], inputs: [port], prefs: {},

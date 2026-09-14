@@ -707,8 +707,9 @@
       else {
         PREFS = M.preferences(response.prefs);
         lastSavedPrefs = M.preferences(response.prefs);
+        runCompletions();
       }
-      runCompletions();
+      if (error) prefsCompletions = [];
     }
     var payload = diffPrefs(PREFS, lastSavedPrefs);
     if (Object.keys(payload).length === 0) {
