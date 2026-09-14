@@ -11,6 +11,11 @@ APP_ID = "org.minimal.home"
 SERVICE_ID = "org.minimal.home.service"
 
 
+def require_file(path):
+    if not path.is_file():
+        raise ValueError("missing staged file: %s" % path)
+
+
 def tar_gzip(entries):
     raw = io.BytesIO()
     with tarfile.open(fileobj=raw, mode="w", format=tarfile.USTAR_FORMAT) as archive:
@@ -47,6 +52,8 @@ def ar_member(name, data):
 
 
 def build(staged, destination):
+    require_file(staged / "launcher-app/appinfo.json")
+    require_file(staged / "launcher-service/services.json")
     appinfo = json.loads((staged / "launcher-app/appinfo.json").read_text(encoding="utf-8"))
     version = appinfo["version"]
     package_info = json.dumps({

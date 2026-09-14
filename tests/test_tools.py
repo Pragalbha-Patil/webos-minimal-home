@@ -157,6 +157,14 @@ class PackagingTest(unittest.TestCase):
                 self.assertNotIn("usr/palm/applications/org.minimal.home/src/launcher.js", names)
                 self.assertNotIn("usr/palm/applications/org.minimal.home/tiles.json", names)
 
+    def test_ipk_rejects_incomplete_staged_service(self):
+        with tempfile.TemporaryDirectory() as temp:
+            staged = Path(temp) / "staged"
+            package.stage(staged)
+            shutil.rmtree(staged / "launcher-service")
+            with self.assertRaisesRegex(ValueError, "launcher-service"):
+                make_ipk.build(staged, Path(temp) / "bad.ipk")
+
     def test_mismatched_tag_fails_before_build_or_packaging(self):
         with patch.object(package.subprocess, "run") as run:
             with self.assertRaises(SystemExit) as error:
