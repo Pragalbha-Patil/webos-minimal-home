@@ -49,7 +49,13 @@ test('first-use, valid/expired/corrupt bypass files and filesystem errors are ha
     const unlink = watcher(); unlink.disk.files.set(C.BYPASS_FILE, '0'); unlink.disk.errors.set('unlink', new Error('denied'));
     unlink.context.onForeground(C.HOME_ID); assert.equal(unlink.calls.length, 1);
     const read = watcher(); read.disk.files.set(C.BYPASS_FILE, '0'); read.disk.errors.set('read:' + C.BYPASS_FILE, new Error('denied'));
-    await read.context.onForeground(C.HOME_ID); assert.equal(read.calls.length, 0);
+    await read.context.onForeground(C.HOME_ID); assert.equal(read.calls.length, 1);
+    const retry = watcher(); retry.context.onForeground(C.HOME_ID);
+    retry.respond({ returnValue: false }); await flush();
+    retry.disk.files.set(C.BYPASS_FILE, '0');
+    await retry.clock.run(2000);
+    assert.equal(retry.calls.length, 2);
+    assert.equal(retry.disk.files.has(C.BYPASS_FILE), false);
 });
 
 test('subscription disconnect clears retry state and ignores data from the old child', async () => {

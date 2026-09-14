@@ -305,11 +305,7 @@ function redirectFailed() {
 async function redirectLoop() {
     if (foregroundApp !== HOME_ID || redirecting) return;
     try {
-        if (
-            fs.existsSync(BYPASS_FILE) &&
-            Date.now() < parseInt(fs.readFileSync(BYPASS_FILE, 'utf8'), 10)
-        )
-            return;
+        if (bypassActive()) return;
         if (Date.now() - lastRedirect < 8000) {
             scheduleRetry(8000 - (Date.now() - lastRedirect));
             return;
