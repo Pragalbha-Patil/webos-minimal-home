@@ -79,6 +79,10 @@ test('Luna subprocess failures and malformed discovery responses are recoverable
     const w = watcher(); const list = w.context.listLaunchPoints(); w.respond('', new Error('offline')); assert.equal(await list, null);
     const launch = w.context.lunaLaunch('video'); w.respond('bad'); assert.equal(await launch, null);
     const failed = w.context.lunaLaunch('video'); w.respond('', new Error('offline')); assert.equal(await failed, null);
+    const noisyLaunch = w.context.lunaLaunch('video'); w.respond('diagnostic\n{"returnValue":true}');
+    assert.deepEqual(await noisyLaunch, { returnValue: true });
+    const noisyList = w.context.listLaunchPoints(); w.respond('diagnostic\n{"returnValue":true,"launchPoints":[]}');
+    assert.deepEqual(await noisyList, []);
     const thrown = watcher({ throwExec: true }); await thrown.context.redirectLoop();
     await thrown.context.onForeground(C.HOME_ID); await flush();
     const provision = thrown.context.runProvision(); await provision;

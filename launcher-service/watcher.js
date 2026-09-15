@@ -26,6 +26,10 @@ let foregroundApp = null;
 let retryTimer = null;
 let redirecting = false;
 
+function parseLunaStdout(stdout) {
+    return createJsonStream(1024 * 1024)(String(stdout))[0] || null;
+}
+
 function lunaLaunch(id) {
     return new Promise((resolve) => {
         execFile(
@@ -39,11 +43,7 @@ function lunaLaunch(id) {
             { timeout: 15000 },
             (err, stdout) => {
                 if (err) return resolve(null);
-                try {
-                    resolve(JSON.parse(stdout));
-                } catch (e) {
-                    resolve(null);
-                }
+                resolve(parseLunaStdout(stdout));
             }
         );
     });
@@ -62,18 +62,12 @@ function listLaunchPoints() {
             { timeout: 20000 },
             (err, stdout) => {
                 if (err) return resolve(null);
-                try {
-                    const p = JSON.parse(stdout);
-                    resolve(
-                        p &&
-                            p.returnValue === true &&
-                            Array.isArray(p.launchPoints)
-                            ? p.launchPoints
-                            : null
-                    );
-                } catch (e) {
-                    resolve(null);
-                }
+                const p = parseLunaStdout(stdout);
+                resolve(
+                    p && p.returnValue === true && Array.isArray(p.launchPoints)
+                        ? p.launchPoints
+                        : null
+                );
             }
         );
     });
