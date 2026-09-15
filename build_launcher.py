@@ -92,10 +92,14 @@ def load_usage(path=None):
     with open(path, encoding="utf-8") as f:
         usage = json.load(f)
     if not isinstance(usage, dict) or not all(
-        isinstance(value, int) and not isinstance(value, bool) and value >= 0
-        for value in usage.values()
+        isinstance(key, str)
+        and re.fullmatch(r"[a-zA-Z0-9_][a-zA-Z0-9._-]{0,255}", key)
+        and isinstance(value, int)
+        and not isinstance(value, bool)
+        and value >= 0
+        for key, value in usage.items()
     ):
-        raise ValueError("usage must be an object mapping app IDs to nonnegative integers")
+        raise ValueError("usage must be an object mapping valid app IDs to nonnegative integers")
     return usage
 
 

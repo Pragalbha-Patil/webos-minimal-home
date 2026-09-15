@@ -83,7 +83,8 @@ class BuildInputsTest(unittest.TestCase):
             path = Path(temp) / "usage.json"
             with self.assertRaises(FileNotFoundError):
                 bl.load_usage(path)
-            for value in ([], {"netflix": True}, {"netflix": -1}, {"netflix": "2"}):
+            for value in ([], {"netflix": True}, {"netflix": -1}, {"netflix": "2"},
+                          {"../bad": 1}, {"": 1}):
                 with self.subTest(value=value):
                     path.write_text(json.dumps(value), encoding="utf-8")
                     with self.assertRaises(ValueError):
