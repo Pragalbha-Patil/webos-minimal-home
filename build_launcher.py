@@ -6,6 +6,7 @@ Use `--check` to verify tracked outputs are up to date (CI gate).
 import argparse
 import copy
 import json
+import math
 import os
 import re
 import sys
@@ -133,9 +134,21 @@ def tile_dict(lp):
         "id": lp.get("id", ""),
         "title": lp["title"] if isinstance(lp.get("title"), str) and lp["title"] else lp.get("id", ""),
         "icon": lp.get("largeIcon") or lp.get("icon") or "",
-        "params": (lp.get("params")
-                   if isinstance(lp.get("params"), dict) and lp.get("params") else None),
+        "params": clean_params(lp.get("params")),
     }
+
+
+def clean_params(value):
+    if not isinstance(value, dict):
+        return None
+    params = {}
+    for key in ("PhysicalAddress", "uniqueId", "value", "displayId"):
+        item = value.get(key)
+        if isinstance(item, (str, bool)) or (
+            isinstance(item, (int, float)) and not isinstance(item, bool) and math.isfinite(item)
+        ):
+            params[key] = item
+    return params or None
 
 
 def sort_key(t, usage, priority):

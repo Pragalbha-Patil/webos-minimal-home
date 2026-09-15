@@ -108,6 +108,13 @@ class ClassifyTest(unittest.TestCase):
         t = next(t for t in inputs if t["id"] == "com.webos.app.hdmi1")
         self.assertEqual(t["params"], {"PhysicalAddress": "1000"})
 
+    def test_preview_params_are_sanitized_like_runtime_launches(self):
+        lp = make_lp("custom.port", "Custom", lptype="bookmark",
+                     params={"id": "wrong", "value": 4, "PhysicalAddress": "2000",
+                             "__proto__": {"polluted": True}, "unknown": "x"})
+        _, inputs, _ = bl.classify([lp], self.cfg)
+        self.assertEqual(inputs[0]["params"], {"PhysicalAddress": "2000", "value": 4})
+
 
 class SortTest(unittest.TestCase):
     def setUp(self):
