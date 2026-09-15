@@ -43,6 +43,7 @@ DEFAULTS = {
 # actually exist comes from the system live (ps5 unplugged now, replug later)
 # and the same classifier lives in launcher-service/model.js.
 MH_INPUT_RE = re.compile(r"^com\.webos\.app\.(livetv|hdmi\d+|av\d+|scart|dp\d+|usbc\d+)$")
+ID_RE = re.compile(r"^[a-zA-Z0-9_][a-zA-Z0-9._-]{0,255}$")
 
 
 def is_input_id(i):
@@ -74,8 +75,8 @@ def load_config():
             raise ValueError("config.json header.%s must be a string" % key)
     for key in ("system", "appsPriority"):
         value = cfg["ui"][key]
-        if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
-            raise ValueError("config.json ui.%s must be an array of strings" % key)
+        if not isinstance(value, list) or not all(isinstance(item, str) and ID_RE.fullmatch(item) for item in value):
+            raise ValueError("config.json ui.%s must be an array of valid app IDs" % key)
     return cfg
 
 
@@ -107,7 +108,7 @@ def classify(tiles, cfg):
         if not isinstance(lp, dict):
             continue
         i = lp.get("id", "")
-        if (not isinstance(i, str) or not re.fullmatch(r"[a-zA-Z0-9_][a-zA-Z0-9._-]{0,255}", i)
+        if (not isinstance(i, str) or not ID_RE.fullmatch(i)
                 or i == SELF or lp.get("hidden") or i in seen):
             continue
         seen.add(i)

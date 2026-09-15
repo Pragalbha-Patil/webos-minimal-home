@@ -48,7 +48,8 @@ class ConfigValidationTest(unittest.TestCase):
     def test_invalid_config_fails_instead_of_using_defaults(self):
         for value in ([], {"version": "../bad"}, {"header": []},
                       {"header": {"text": None}}, {"ui": {"system": "all"}},
-                      {"ui": {"appsPriority": [1]}}):
+                      {"ui": {"appsPriority": [1]}}, {"ui": {"system": ["../bad"]}},
+                      {"ui": {"appsPriority": ["bad id"]}}):
             with self.subTest(value=value):
                 self.write_config(value)
                 with self.assertRaises(ValueError):
