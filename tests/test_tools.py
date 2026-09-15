@@ -197,8 +197,15 @@ class MergeConfigTest(unittest.TestCase):
         )
 
     def test_invalid_installed_known_fields_are_rejected(self):
-        for installed in ([], {"header": []}, {"header": {"text": False}},
-                          {"ui": []}, {"ui": {"system": [False]}}):
+        for installed in (
+            [],
+            {"header": []},
+            {"header": {"text": False}},
+            {"ui": []},
+            {"ui": {"system": [False]}},
+            {"ui": {"system": ["../bad"]}},
+            {"ui": {"appsPriority": ["bad id"]}},
+        ):
             with self.subTest(installed=installed), self.assertRaises(ValueError):
                 merge_config.merge_configs({"version": "2.0.0"}, installed)
 

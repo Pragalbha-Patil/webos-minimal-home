@@ -3,7 +3,11 @@
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
+
+
+ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 
 
 def _validate_header(header):
@@ -25,6 +29,8 @@ def _validate_ui(ui):
         if key in ui and (not isinstance(ui[key], list) or
                           not all(isinstance(value, str) for value in ui[key])):
             raise ValueError("installed config ui.%s must be an array of strings" % key)
+        if key in ui and not all(ID_RE.match(value) for value in ui[key]):
+            raise ValueError("installed config ui.%s contains an invalid app id" % key)
 
 
 def _validate_custom_config(config):
