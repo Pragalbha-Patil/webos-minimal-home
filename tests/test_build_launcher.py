@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -107,6 +108,18 @@ class ClassifyTest(unittest.TestCase):
         _, inputs, _ = bl.classify(SAMPLE, self.cfg)
         t = next(t for t in inputs if t["id"] == "com.webos.app.hdmi1")
         self.assertEqual(t["params"], {"PhysicalAddress": "1000"})
+
+    def test_malformed_tiles_file_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as temp:
+            tiles = os.path.join(temp, "tiles.json")
+            with open(tiles, "w", encoding="utf-8") as f:
+                json.dump([], f)
+            with patch.object(bl, "APP_DIR", temp), self.assertRaisesRegex(ValueError, "object"):
+                bl.load_tiles()
+            with open(tiles, "w", encoding="utf-8") as f:
+                json.dump({"launchPoints": {}}, f)
+            with patch.object(bl, "APP_DIR", temp), self.assertRaisesRegex(ValueError, "array"):
+                bl.load_tiles()
 
 
 class SortTest(unittest.TestCase):
