@@ -242,6 +242,7 @@ function readZoneTemp(tz) {
     } catch (error) {
         return null;
     }
+    if (!/^-?\d+$/.test(t)) return null;
     return M.metric(Math.round(parseInt(t, 10) / 1000), -100, 200);
 }
 

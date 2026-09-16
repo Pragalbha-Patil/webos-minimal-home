@@ -137,6 +137,9 @@ test('missing and malformed kernel counters produce unknown values without crash
     }
     w.disk.files.set('/sys/class/thermal/not-a-zone/temp', '0');
     w.disk.files.set('/sys/class/thermal/thermal_zone0/temp', 'bad'); w.context.collectSystemStats();
+    assert.equal(JSON.parse(w.disk.files.get(C.STATS_FILE)).temp, null);
+    w.disk.files.set('/sys/class/thermal/thermal_zone0/temp', '65000junk'); w.context.collectSystemStats();
+    assert.equal(JSON.parse(w.disk.files.get(C.STATS_FILE)).temp, null);
     for (const operation of ['read:/proc/stat', 'read:/proc/meminfo', 'readdir', 'write:' + C.STATS_FILE + '.tmp']) {
         w.disk.errors.set(operation, new Error('denied')); assert.doesNotThrow(() => w.context.collectSystemStats());
     }
