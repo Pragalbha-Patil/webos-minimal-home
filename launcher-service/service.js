@@ -141,7 +141,7 @@ register('getTiles', function (payload, reply) {
                 title:
                     typeof lp.title === 'string' && lp.title ? lp.title : lp.id,
                 icon: 'icons/' + lp.id + '.png',
-                params: M.record(lp.params) ? lp.params : null,
+                params: M.params(lp.params),
                 pinned: prefs.pinned.indexOf(lp.id) >= 0,
                 hidden: prefs.hidden.indexOf(lp.id) >= 0
             };
