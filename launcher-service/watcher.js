@@ -212,15 +212,12 @@ function readCpuUsage() {
 function readRamUsage() {
     try {
         var mem = fs.readFileSync('/proc/meminfo', 'utf8');
-        var memoryTotal = parseInt(
-            (mem.match(/MemTotal:\s+(\d+)/) || [])[1] || '0',
-            10
-        );
-        var avail = parseInt(
-            (mem.match(/MemAvailable:\s+(\d+)/) || [])[1] || '0',
-            10
-        );
-        if (memoryTotal <= 0 || !/MemAvailable:/.test(mem)) return null;
+        var totalMatch = mem.match(/^MemTotal:\s+(\d+)(?:\s+kB)?\s*$/m);
+        var availMatch = mem.match(/^MemAvailable:\s+(\d+)(?:\s+kB)?\s*$/m);
+        if (!totalMatch || !availMatch) return null;
+        var memoryTotal = parseInt(totalMatch[1], 10);
+        var avail = parseInt(availMatch[1], 10);
+        if (memoryTotal <= 0) return null;
         return M.metric(
             Math.round((100 * (memoryTotal - avail)) / memoryTotal),
             0,

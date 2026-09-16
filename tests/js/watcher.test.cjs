@@ -126,7 +126,8 @@ test('stats use CPU deltas, recover after disabled periods and skip unreadable t
     w.disk.files.set(C.PREFS_FILE, '{"showSystemStats":false}'); const previous = w.disk.files.get(C.STATS_FILE);
     w.context.collectSystemStats(); assert.equal(w.disk.files.get(C.STATS_FILE), previous);
     w.disk.files.set(C.PREFS_FILE, '{"showSystemStats":true}'); w.context.collectSystemStats(); assert.equal(sample().cpu, null);
-    w.disk.files.set('/proc/meminfo', 'MemTotal: 1000'); w.context.collectSystemStats(); assert.equal(sample().ram, null);
+    w.disk.files.set('/proc/meminfo', 'MemTotal: 1000 kB'); w.context.collectSystemStats(); assert.equal(sample().ram, null);
+    w.disk.files.set('/proc/meminfo', 'MemTotal: 1000x kB\nMemAvailable: 400 kB'); w.context.collectSystemStats(); assert.equal(sample().ram, null);
 });
 
 test('missing and malformed kernel counters produce unknown values without crashing', () => {
