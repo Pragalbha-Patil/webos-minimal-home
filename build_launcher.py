@@ -139,12 +139,14 @@ def tile_dict(lp):
 
 
 def sort_key(t, usage, priority):
+    title_key = (t["title"] or t["id"]).lower()
+    id_key = t["id"]
     if t["id"] in usage:
-        return (-1, -usage[t["id"]])
+        return (-1, -usage[t["id"]], title_key, id_key)
     try:
-        return (0, priority.index(t["id"]))
+        return (0, priority.index(t["id"]), title_key, id_key)
     except ValueError:
-        return (1, t["title"].lower())
+        return (1, title_key, id_key)
 
 
 def tile_html(t):

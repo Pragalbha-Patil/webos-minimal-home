@@ -129,6 +129,11 @@ class SortTest(unittest.TestCase):
         s = sorted(tiles, key=lambda t: bl.sort_key(t, {}, self.cfg["ui"]["appsPriority"]))
         self.assertEqual([t["id"] for t in s], ["a", "b"])
 
+    def test_same_title_and_usage_break_ties_by_id(self):
+        tiles = [{"id": "z", "title": "Same"}, {"id": "a", "title": "Same"}]
+        s = sorted(tiles, key=lambda t: bl.sort_key(t, {"z": 1, "a": 1}, self.cfg["ui"]["appsPriority"]))
+        self.assertEqual([t["id"] for t in s], ["a", "z"])
+
 
 class TemplateTest(unittest.TestCase):
     def test_tile_attributes_and_labels_are_escaped(self):
