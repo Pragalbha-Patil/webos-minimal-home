@@ -31,11 +31,17 @@ def tar_gzip(entries):
 
 
 def tree_entries(source, prefix):
-    return [
-        (prefix + "/" + path.relative_to(source).as_posix(), path.read_bytes(),
-         0o755 if path.name == "start-watcher.sh" else 0o644)
-        for path in source.rglob("*") if path.is_file()
-    ]
+    entries = []
+    for path in source.rglob("*"):
+        if path.is_symlink():
+            raise ValueError("staged runtime file must not be a symlink: %s" % path)
+        if path.is_file():
+            entries.append((
+                prefix + "/" + path.relative_to(source).as_posix(),
+                path.read_bytes(),
+                0o755 if path.name == "start-watcher.sh" else 0o644,
+            ))
+    return entries
 
 
 def ar_member(name, data):

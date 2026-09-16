@@ -157,6 +157,19 @@ class PackagingTest(unittest.TestCase):
                 self.assertNotIn("usr/palm/applications/org.minimal.home/src/launcher.js", names)
                 self.assertNotIn("usr/palm/applications/org.minimal.home/tiles.json", names)
 
+    def test_ipk_rejects_symlinked_runtime_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            staged = Path(temp) / "staged"
+            package.stage(staged)
+            icon = staged / "launcher-app/icon.png"
+            real_is_symlink = Path.is_symlink
+
+            def is_symlink(path):
+                return path == icon or real_is_symlink(path)
+
+            with patch.object(Path, "is_symlink", is_symlink), self.assertRaises(ValueError):
+                make_ipk.build(staged, Path(temp) / "out.ipk")
+
     def test_mismatched_tag_fails_before_build_or_packaging(self):
         with patch.object(package.subprocess, "run") as run:
             with self.assertRaises(SystemExit) as error:
