@@ -33,6 +33,8 @@ test('config edits are reread without restarting the relay', () => {
     assert.deepEqual(updated.header, { text: 'New', brand: 'Greeting' });
     assert.deepEqual(updated.config, { system: ['system'], settingsTile: null });
     assert.deepEqual(updated.tiles.map(tile => tile.id), ['z', 'a', 'system']);
+    s.disk.files.set(C.CONFIG_FILE, JSON.stringify({ header: { text: 'New', brand: 'x'.repeat(41) } }));
+    assert.deepEqual(discover().header, { text: 'New', brand: '' });
     s.disk.files.set(C.CONFIG_FILE, JSON.stringify({ ui: { system: [], appsPriority: ['a'] } }));
     assert.deepEqual(discover().tiles.map(tile => tile.id), ['a', 'z']);
 });

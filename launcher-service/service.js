@@ -162,7 +162,7 @@ register('getTiles', function (payload, reply) {
             },
             header: {
                 text: typeof header.text === 'string' ? header.text : '',
-                brand: typeof header.brand === 'string' ? header.brand : ''
+                brand: M.brand(header.brand)
             }
         });
     });
