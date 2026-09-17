@@ -135,7 +135,8 @@
                     typeof count === 'number' &&
                     isFinite(count) &&
                     count >= 0 &&
-                    Math.floor(count) === count
+                    Math.floor(count) === count &&
+                    count <= Number.MAX_SAFE_INTEGER
                 )
                     result[id] = count;
             });

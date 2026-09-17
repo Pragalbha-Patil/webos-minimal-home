@@ -38,7 +38,7 @@ test('launch parameters preserve ports without allowing target or prototype over
 
 test('usage ignores malformed counts and sorting is stable for identical values', () => {
     assert.deepEqual(Object.keys(M.usage(null)), []);
-    const counts = M.usage(JSON.parse('{"__proto__":5,"video":3,"bad":-1,"text":"1","float":1.5,"../bad":4}'));
+    const counts = M.usage(JSON.parse('{"__proto__":5,"video":3,"bad":-1,"text":"1","float":1.5,"../bad":4,"huge":9007199254740992}'));
     assert.equal(Object.getPrototypeOf(counts), null);
     assert.deepEqual(Object.keys(counts), ['__proto__', 'video']);
     const a = { id: 'a', title: 'Same' }, b = { id: 'b', title: 'Same' }, z = { id: 'z', title: 'Zebra' };
