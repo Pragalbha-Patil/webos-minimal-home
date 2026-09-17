@@ -172,6 +172,13 @@ class PackagingTest(unittest.TestCase):
                     package.main(["--output-dir", str(destination)])
             self.assertFalse(destination.exists())
 
+    def test_stage_destination_must_be_a_directory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "staged"
+            destination.write_text("not a directory", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "staging path must be a directory"):
+                package.stage_empty(destination)
+
 
 class MergeConfigTest(unittest.TestCase):
     def test_custom_values_survive_and_new_schema_and_version_win(self):

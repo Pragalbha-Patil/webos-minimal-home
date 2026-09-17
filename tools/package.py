@@ -96,8 +96,11 @@ def check_tag(tag, version):
 
 
 def stage_empty(directory):
-    if directory.exists() and any(directory.iterdir()):
-        raise ValueError("staging directory must be empty")
+    if directory.exists():
+        if not directory.is_dir():
+            raise ValueError("staging path must be a directory")
+        if any(directory.iterdir()):
+            raise ValueError("staging directory must be empty")
     stage(directory)
     print("Staged runtime files in %s" % directory)
 
