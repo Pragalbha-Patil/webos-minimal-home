@@ -96,6 +96,8 @@ def load_usage(path=None):
         for value in usage.values()
     ):
         raise ValueError("usage must be an object mapping app IDs to nonnegative integers")
+    if any(value > 9007199254740991 for value in usage.values()):
+        raise ValueError("usage values must be JavaScript-safe integers")
     return usage
 
 
