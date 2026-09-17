@@ -157,6 +157,17 @@ class PackagingTest(unittest.TestCase):
                 self.assertNotIn("usr/palm/applications/org.minimal.home/src/launcher.js", names)
                 self.assertNotIn("usr/palm/applications/org.minimal.home/tiles.json", names)
 
+    def test_release_rejects_symlinked_allowlist_sources(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "source"
+            for name in package.RELEASE_FILES:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(("fixture: " + name).encode())
+            with patch.object(Path, "is_symlink", lambda path: path.name == "INSTALL.md"):
+                with self.assertRaisesRegex(ValueError, "release source must not be a symlink"):
+                    package.package(Path(temp) / "release.tar.gz", root)
+
     def test_mismatched_tag_fails_before_build_or_packaging(self):
         with patch.object(package.subprocess, "run") as run:
             with self.assertRaises(SystemExit) as error:
