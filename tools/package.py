@@ -49,9 +49,12 @@ RELEASE_FILES = RUNTIME_FILES + (
 def stage(destination, root=ROOT):
     """Copy the runtime allowlist into a fresh directory, excluding TV state."""
     for name in RUNTIME_FILES:
+        source = root / name
+        if source.is_symlink():
+            raise ValueError("runtime source must not be a symlink: %s" % name)
         target = destination / name
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(root / name, target)
+        shutil.copyfile(source, target)
 
 
 def add_release_entry(archive, root, name):

@@ -127,6 +127,22 @@ class PackagingTest(unittest.TestCase):
             actual = {p.relative_to(staged).as_posix() for p in staged.rglob("*") if p.is_file()}
             self.assertEqual(actual, set(package.RUNTIME_FILES))
 
+    def test_stage_rejects_symlinked_runtime_sources(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "source"
+            for name in package.RUNTIME_FILES:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(("fixture: " + name).encode())
+            icon = root / "launcher-app/icon.png"
+            real_is_symlink = Path.is_symlink
+
+            def is_symlink(path):
+                return path == icon or real_is_symlink(path)
+
+            with patch.object(Path, "is_symlink", is_symlink), self.assertRaises(ValueError):
+                package.stage(Path(temp) / "staged", root)
+
     def test_ipk_contains_only_staged_app_service_and_package_metadata(self):
         with tempfile.TemporaryDirectory() as temp:
             staged = Path(temp) / "staged"
