@@ -98,6 +98,16 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class CheckMarkdownTest(unittest.TestCase):
+    def test_indented_code_block_links_are_ignored(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "README.md"
+            path.write_text("    [example](missing.md)\n\t[tabbed](absent.md)\n", encoding="utf-8")
+            errors = []
+            check.check_markdown("README.md", path, errors)
+            self.assertEqual(errors, [])
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:

@@ -90,6 +90,7 @@ def check_link(name, path, target, errors):
 def check_markdown(name, path, errors):
     # Check inline file links, not remote URLs or heading fragments.
     body = re.sub(r"```.*?```", "", path.read_text(encoding="utf-8"), flags=re.S)
+    body = re.sub(r"(?m)^(?:    |\t).*(?:\n|$)", "", body)
     for target in re.findall(r"\[[^\]]*\]\(([^)]+)\)", body):
         check_link(name, path, target, errors)
 
