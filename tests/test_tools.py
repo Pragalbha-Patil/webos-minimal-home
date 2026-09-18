@@ -157,6 +157,14 @@ class PackagingTest(unittest.TestCase):
                 self.assertNotIn("usr/palm/applications/org.minimal.home/src/launcher.js", names)
                 self.assertNotIn("usr/palm/applications/org.minimal.home/tiles.json", names)
 
+    def test_ipk_requires_object_appinfo(self):
+        with tempfile.TemporaryDirectory() as temp:
+            staged = Path(temp) / "staged"
+            package.stage(staged)
+            (staged / "launcher-app/appinfo.json").write_text("[]", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "appinfo.json must contain an object"):
+                make_ipk.build(staged, Path(temp) / "out.ipk")
+
     def test_mismatched_tag_fails_before_build_or_packaging(self):
         with patch.object(package.subprocess, "run") as run:
             with self.assertRaises(SystemExit) as error:

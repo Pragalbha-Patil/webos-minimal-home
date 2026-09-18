@@ -48,6 +48,8 @@ def ar_member(name, data):
 
 def build(staged, destination):
     appinfo = json.loads((staged / "launcher-app/appinfo.json").read_text(encoding="utf-8"))
+    if not isinstance(appinfo, dict):
+        raise ValueError("launcher-app/appinfo.json must contain an object")
     version = appinfo["version"]
     package_info = json.dumps({
         "id": APP_ID,
