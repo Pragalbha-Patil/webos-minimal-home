@@ -759,7 +759,14 @@ window.MH_CONFIG = {"version": "v1.7.0", "system": ["com.webos.app.discovery", "
     function brand(value) {
         if (typeof value !== 'string') return '';
         value = value.replace(/^\s+|\s+$/g, '');
-        return value && value.length <= 40 ? value : '';
+        return value &&
+            value.length <= 40 &&
+            value.split('').every(function (character) {
+                var code = character.charCodeAt(0);
+                return code >= 32 && code !== 127;
+            })
+            ? value
+            : '';
     }
     function cleanBrandField(result, key, item) {
         if (item === '') {

@@ -19,7 +19,7 @@ test('preferences validate types, choices, own keys, IDs, bounds, and fresh defa
     assert.equal(M.preferences({ hidden: Array.from({ length: 100 }, (_, i) => 'app' + i) }).hidden.length, 60);
     const prefs = M.preferences(); prefs.hidden.push('local'); assert.deepEqual(M.preferences().hidden, []);
     assert.equal(M.brand('  Living Room  '), 'Living Room');
-    assert.equal(M.brand(''), ''); assert.equal(M.brand('x'.repeat(41)), ''); assert.equal(M.brand(4), '');
+    assert.equal(M.brand(''), ''); assert.equal(M.brand('x'.repeat(41)), ''); assert.equal(M.brand('Living\nRoom'), ''); assert.equal(M.brand(4), '');
     assert.deepEqual(M.cleanPrefs({ brand: '  My TV  ', brandConfigured: true }),
         { brand: 'My TV', brandConfigured: true });
     assert.deepEqual(M.ids(null, 10), []);
