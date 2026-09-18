@@ -34,6 +34,10 @@ test('backoff grows to a bounded maximum and bypass prevents queued retries', as
     w.respond({ returnValue: false }); await flush();
     w.disk.files.set(C.BYPASS_FILE, String(w.now() + 60000));
     const count = w.calls.length; await w.clock.run(300000); assert.equal(w.calls.length, count);
+    w.disk.files.set(C.BYPASS_FILE, 'invalid');
+    const retry = w.context.redirectLoop();
+    assert.equal(w.disk.files.has(C.BYPASS_FILE), false);
+    w.respond({ returnValue: true }); await retry;
 });
 
 test('first-use, valid/expired/corrupt bypass files and filesystem errors are handled', async () => {
@@ -49,7 +53,8 @@ test('first-use, valid/expired/corrupt bypass files and filesystem errors are ha
     const unlink = watcher(); unlink.disk.files.set(C.BYPASS_FILE, '0'); unlink.disk.errors.set('unlink', new Error('denied'));
     unlink.context.onForeground(C.HOME_ID); assert.equal(unlink.calls.length, 1);
     const read = watcher(); read.disk.files.set(C.BYPASS_FILE, '0'); read.disk.errors.set('read:' + C.BYPASS_FILE, new Error('denied'));
-    await read.context.onForeground(C.HOME_ID); assert.equal(read.calls.length, 0);
+    await read.context.onForeground(C.HOME_ID); assert.equal(read.calls.length, 1);
+    read.respond({ returnValue: true }); await flush();
 });
 
 test('subscription disconnect clears retry state and ignores data from the old child', async () => {
