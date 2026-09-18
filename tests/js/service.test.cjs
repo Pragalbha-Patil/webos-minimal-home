@@ -7,12 +7,14 @@ test('discovery validates data, filters duplicate/system IDs and preserves bookm
     s.disk.files.set(C.PREFS_FILE, JSON.stringify({ pinned: ['z'], hidden: ['a'], dateFormat: '<bad>' }));
     const replies = s.request('getTiles');
     s.respond({ returnValue: true, launchPoints: [null, {}, { id: 4 }, { id: '../bad' }, { id: C.SELF_ID },
-        { id: 'a', title: 'Alpha' }, { id: 'a' }, { id: 'z', title: 4 }, { id: 'hidden', hidden: true },
+        { id: 'a', title: 'Alpha' }, { id: 'a' }, { id: 'z', title: 4 },
+        { id: 'long', title: 'x'.repeat(121) }, { id: 'hidden', hidden: true },
         { id: 'system', systemApp: true }, { id: C.SETTINGS_ID, systemApp: true },
         { id: 'port', lptype: 'bookmark', systemApp: true, params: { value: 4 } }] });
-    assert.deepEqual(replies[0].tiles.map(t => t.id), ['z', 'a', C.SETTINGS_ID]);
+    assert.deepEqual(replies[0].tiles.map(t => t.id), ['z', 'a', C.SETTINGS_ID, 'long']);
     assert.equal(replies[0].tiles.find(t => t.id === 'a').hidden, true);
-    assert.equal(replies[0].tiles[0].title, 'z');
+    assert.equal(replies[0].tiles.find(t => t.id === 'z').title, 'z');
+    assert.equal(replies[0].tiles.find(t => t.id === 'long').title, 'long');
     assert.deepEqual(replies[0].inputs[0].params, { value: 4 });
     assert.equal(replies[0].prefs.dateFormat, 'HH:mm');
 });

@@ -7,6 +7,7 @@ var M = require('./model');
 var store = require('./storage')(fs);
 var log = store.logger(C.SVC_LOG, C.LOG_MAX_BYTES);
 var service = new Service(C.SELF_ID + '.service');
+var TITLE_MAX = 120;
 
 function failure(error) {
     return {
@@ -136,10 +137,15 @@ register('getTiles', function (payload, reply) {
             )
                 return;
             seen[lp.id] = true;
+            var title =
+                typeof lp.title === 'string' &&
+                lp.title.length > 0 &&
+                lp.title.length <= TITLE_MAX
+                    ? lp.title
+                    : lp.id;
             var tile = {
                 id: lp.id,
-                title:
-                    typeof lp.title === 'string' && lp.title ? lp.title : lp.id,
+                title: title,
                 icon: 'icons/' + lp.id + '.png',
                 params: M.record(lp.params) ? lp.params : null,
                 pinned: prefs.pinned.indexOf(lp.id) >= 0,
