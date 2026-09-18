@@ -118,7 +118,10 @@
                     if (
                         typeof item === 'string' ||
                         typeof item === 'boolean' ||
-                        (typeof item === 'number' && isFinite(item))
+                        (typeof item === 'number' &&
+                            isFinite(item) &&
+                            Math.floor(item) === item &&
+                            Math.abs(item) <= 9007199254740991)
                     )
                         result[key] = item;
                 }

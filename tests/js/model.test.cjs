@@ -29,7 +29,7 @@ test('launch parameters preserve ports without allowing target or prototype over
     for (const value of [null, [], true]) assert.deepEqual(M.params(value), {});
     assert.deepEqual(M.params({ id: 'wrong', PhysicalAddress: '2000', value: 4, displayId: false, uniqueId: {}, other: 1 }),
         { PhysicalAddress: '2000', value: 4, displayId: false });
-    assert.deepEqual(M.params({ value: Infinity, displayId: NaN }), {});
+    assert.deepEqual(M.params({ value: Infinity, displayId: NaN, uniqueId: 9007199254740992, PhysicalAddress: 1.5 }), {});
     assert.deepEqual(M.params(Object.create({ value: 1 })), {});
     for (const id of ['com.webos.app.hdmi1', 'com.webos.app.scart', 'com.webos.app.livetv']) assert.ok(M.input({ id }));
     for (const value of [null, [], {}, { id: 'video' }, { id: 42 }]) assert.equal(M.input(value), false);
