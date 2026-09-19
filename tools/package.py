@@ -84,6 +84,8 @@ def write_checksum(destination):
 
 def read_version():
     config = json.loads((ROOT / "launcher-app/config.json").read_text(encoding="utf-8"))
+    if not isinstance(config, dict):
+        raise ValueError("config must contain an object")
     version = config["version"]
     if not isinstance(version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", version):
         raise ValueError("version must be MAJOR.MINOR.PATCH")

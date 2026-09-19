@@ -164,6 +164,15 @@ class PackagingTest(unittest.TestCase):
             self.assertEqual(error.exception.code, 1)
             run.assert_not_called()
 
+    def test_package_version_requires_object_config(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "launcher-app").mkdir()
+            (root / "launcher-app/config.json").write_text("[]", encoding="utf-8")
+            with patch.object(package, "ROOT", root):
+                with self.assertRaisesRegex(ValueError, "config must contain an object"):
+                    package.read_version()
+
     def test_stale_build_prevents_packaging(self):
         with tempfile.TemporaryDirectory() as temp:
             destination = Path(temp) / "dist"
