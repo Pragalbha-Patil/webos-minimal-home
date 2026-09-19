@@ -61,7 +61,8 @@ class InlineScripts(HTMLParser):
 
 def check_json(name, path, errors):
     try:
-        json.loads(path.read_text(encoding="utf-8"))
+        json.loads(path.read_text(encoding="utf-8"),
+                   parse_constant=lambda value: (_ for _ in ()).throw(ValueError("invalid JSON constant: %s" % value)))
     except ValueError as exc:
         errors.append("%s: %s" % (name, exc))
 

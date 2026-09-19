@@ -98,6 +98,16 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class CheckJsonTest(unittest.TestCase):
+    def test_rejects_nonstandard_json_constants(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "bad.json"
+            path.write_text('{"value": NaN}', encoding="utf-8")
+            errors = []
+            check.check_json("bad.json", path, errors)
+            self.assertRegex(errors[0], "invalid JSON constant")
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:
