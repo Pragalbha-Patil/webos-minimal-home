@@ -18,6 +18,7 @@ SELF = "org.minimal.home"
 SETTINGS_ID = "com.palm.app.settings"
 SETTINGS_ICON = "icons/com.palm.app.settings.png"
 LG_HOME_ID = "__LGHOME__"
+TITLE_MAX = 120
 
 DEFAULTS = {
     "version": "1.0.0",
@@ -129,9 +130,12 @@ def classify(tiles, cfg):
 
 
 def tile_dict(lp):
+    title = lp["title"] if isinstance(lp.get("title"), str) and lp["title"] else lp.get("id", "")
+    if not isinstance(title, str) or len(title) > TITLE_MAX:
+        title = lp.get("id", "")
     return {
         "id": lp.get("id", ""),
-        "title": lp["title"] if isinstance(lp.get("title"), str) and lp["title"] else lp.get("id", ""),
+        "title": title,
         "icon": lp.get("largeIcon") or lp.get("icon") or "",
         "params": (lp.get("params")
                    if isinstance(lp.get("params"), dict) and lp.get("params") else None),

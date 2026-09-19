@@ -67,9 +67,10 @@ class ClassifyTest(unittest.TestCase):
 
     def test_malformed_and_duplicate_launch_points_are_skipped(self):
         records = [None, [], {}, {"id": 5}, make_lp('../escape', 'Bad'),
-                   make_lp('valid', None), make_lp('valid', 'Duplicate')]
+                   make_lp('valid', None), make_lp('long', 'x' * 121),
+                   make_lp('valid', 'Duplicate')]
         apps, inputs, _ = bl.classify(records, self.cfg)
-        self.assertEqual([(t['id'], t['title']) for t in apps], [('valid', 'valid')])
+        self.assertEqual([(t['id'], t['title']) for t in apps], [('valid', 'valid'), ('long', 'long')])
         self.assertEqual(inputs, [])
 
     def test_empty_allowlist_hides_settings_and_other_system_apps(self):
