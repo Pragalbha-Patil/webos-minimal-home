@@ -82,7 +82,10 @@ def load_config():
 def load_tiles():
     with open(os.path.join(APP_DIR, "tiles.json"), encoding="utf-8") as f:
         data = json.load(f)
-    return data.get("launchPoints", [])
+    tiles = data.get("launchPoints", [])
+    if not isinstance(tiles, list):
+        raise ValueError("tiles.json launchPoints must be an array")
+    return tiles
 
 
 def load_usage(path=None):

@@ -64,6 +64,13 @@ class ConfigValidationTest(unittest.TestCase):
 
 
 class BuildInputsTest(unittest.TestCase):
+    def test_tiles_launch_points_must_be_an_array(self):
+        with tempfile.TemporaryDirectory() as temp:
+            Path(temp, "tiles.json").write_text('{"launchPoints": {}}', encoding="utf-8")
+            with patch.object(bl, "APP_DIR", temp):
+                with self.assertRaisesRegex(ValueError, "launchPoints must be an array"):
+                    bl.load_tiles()
+
     def test_personal_state_is_only_loaded_explicitly(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "usage.json"
