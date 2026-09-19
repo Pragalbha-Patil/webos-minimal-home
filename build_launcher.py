@@ -129,10 +129,13 @@ def classify(tiles, cfg):
 
 
 def tile_dict(lp):
+    icon = lp.get("largeIcon") or lp.get("icon") or ""
+    if not isinstance(icon, str):
+        icon = ""
     return {
         "id": lp.get("id", ""),
         "title": lp["title"] if isinstance(lp.get("title"), str) and lp["title"] else lp.get("id", ""),
-        "icon": lp.get("largeIcon") or lp.get("icon") or "",
+        "icon": icon,
         "params": (lp.get("params")
                    if isinstance(lp.get("params"), dict) and lp.get("params") else None),
     }

@@ -108,6 +108,10 @@ class ClassifyTest(unittest.TestCase):
         t = next(t for t in inputs if t["id"] == "com.webos.app.hdmi1")
         self.assertEqual(t["params"], {"PhysicalAddress": "1000"})
 
+    def test_non_string_icons_are_ignored(self):
+        apps, _, _ = bl.classify([make_lp("valid", "Valid", icon=[])], self.cfg)
+        self.assertEqual(apps[0]["icon"], "")
+
 
 class SortTest(unittest.TestCase):
     def setUp(self):
