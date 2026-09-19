@@ -64,6 +64,13 @@ class ConfigValidationTest(unittest.TestCase):
 
 
 class BuildInputsTest(unittest.TestCase):
+    def test_tiles_file_must_contain_an_object(self):
+        with tempfile.TemporaryDirectory() as temp:
+            Path(temp, "tiles.json").write_text("[]", encoding="utf-8")
+            with patch.object(bl, "APP_DIR", temp):
+                with self.assertRaisesRegex(ValueError, "tiles.json must contain an object"):
+                    bl.load_tiles()
+
     def test_personal_state_is_only_loaded_explicitly(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "usage.json"
