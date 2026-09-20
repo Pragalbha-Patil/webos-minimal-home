@@ -55,7 +55,10 @@ def stage(destination, root=ROOT):
 
 
 def add_release_entry(archive, root, name):
-    data = (root / name).read_bytes()
+    path = root / name
+    if not path.is_file():
+        raise ValueError("missing release file: " + name)
+    data = path.read_bytes()
     entry = tarfile.TarInfo(name)
     entry.size = len(data)
     entry.mode = 0o755 if name == "tools/install.sh" else 0o644

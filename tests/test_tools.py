@@ -172,6 +172,18 @@ class PackagingTest(unittest.TestCase):
                     package.main(["--output-dir", str(destination)])
             self.assertFalse(destination.exists())
 
+    def test_package_reports_missing_release_file(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "source"
+            for name in package.RELEASE_FILES:
+                if name == package.RELEASE_FILES[-1]:
+                    continue
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fixture", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "missing release file"):
+                package.package(Path(temp) / "release.tar.gz", root)
+
 
 class MergeConfigTest(unittest.TestCase):
     def test_custom_values_survive_and_new_schema_and_version_win(self):
