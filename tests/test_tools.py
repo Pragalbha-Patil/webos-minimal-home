@@ -172,6 +172,18 @@ class PackagingTest(unittest.TestCase):
                     package.main(["--output-dir", str(destination)])
             self.assertFalse(destination.exists())
 
+    def test_stage_checks_allowlist_before_copying(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "source"
+            for name in package.RUNTIME_FILES[:-1]:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fixture", encoding="utf-8")
+            destination = Path(temp) / "staged"
+            with self.assertRaisesRegex(ValueError, "missing runtime files"):
+                package.stage(destination, root)
+            self.assertFalse(destination.exists())
+
 
 class MergeConfigTest(unittest.TestCase):
     def test_custom_values_survive_and_new_schema_and_version_win(self):

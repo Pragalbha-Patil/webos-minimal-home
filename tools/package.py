@@ -48,6 +48,9 @@ RELEASE_FILES = RUNTIME_FILES + (
 
 def stage(destination, root=ROOT):
     """Copy the runtime allowlist into a fresh directory, excluding TV state."""
+    missing = [name for name in RUNTIME_FILES if not (root / name).is_file()]
+    if missing:
+        raise ValueError("missing runtime files: " + ", ".join(missing))
     for name in RUNTIME_FILES:
         target = destination / name
         target.parent.mkdir(parents=True, exist_ok=True)
