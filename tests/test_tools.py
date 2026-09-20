@@ -98,6 +98,16 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class MarkdownCheckTest(unittest.TestCase):
+    def test_tilde_fenced_links_are_ignored(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "README.md"
+            path.write_text("~~~\n[example](missing.md)\n~~~\n", encoding="utf-8")
+            errors = []
+            check.check_markdown("README.md", path, errors)
+            self.assertEqual(errors, [])
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:
