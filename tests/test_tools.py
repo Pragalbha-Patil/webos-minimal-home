@@ -98,6 +98,18 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class MarkdownCheckTest(unittest.TestCase):
+    def test_single_quoted_link_titles_do_not_change_target(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "target.md").write_text("ok", encoding="utf-8")
+            path = root / "README.md"
+            path.write_text("[target](target.md 'Readable title')\n", encoding="utf-8")
+            errors = []
+            check.check_markdown("README.md", path, errors)
+            self.assertEqual(errors, [])
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:

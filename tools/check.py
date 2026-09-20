@@ -79,7 +79,7 @@ def check_shell(name, path, errors):
 
 
 def check_link(name, path, target, errors):
-    target = target.strip().split(' "', 1)[0].strip("<>")
+    target = target.strip().split(' "', 1)[0].split(" '", 1)[0].strip("<>")
     url = urlsplit(target)
     if url.scheme or url.netloc or not url.path:
         return
