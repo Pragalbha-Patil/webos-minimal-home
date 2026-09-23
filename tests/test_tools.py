@@ -98,6 +98,17 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class SourceCheckTest(unittest.TestCase):
+    def test_uppercase_suffixes_are_checked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "README.MD"
+            path.write_text("[missing](missing.md)\n", encoding="utf-8")
+            errors = []
+            with patch.object(check, "ROOT", Path(temp)):
+                check.check_source("README.MD", errors)
+            self.assertRegex(errors[0], "missing link target")
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:

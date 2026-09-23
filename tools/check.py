@@ -98,13 +98,14 @@ def check_source(name, errors):
     path = ROOT / name
     if not path.is_file():
         return
-    if path.suffix == ".json":
+    suffix = path.suffix.lower()
+    if suffix == ".json":
         check_json(name, path, errors)
-    elif path.suffix == ".py":
+    elif suffix == ".py":
         check_python(name, path, errors)
-    elif path.suffix == ".sh":
+    elif suffix == ".sh":
         check_shell(name, path, errors)
-    elif path.suffix == ".md":
+    elif suffix == ".md":
         check_markdown(name, path, errors)
 
 
