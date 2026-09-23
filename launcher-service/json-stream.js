@@ -28,6 +28,7 @@ module.exports = function (limit) {
         else if (character === '"') quoted = false;
     }
     return function (chunk) {
+        chunk = String(chunk);
         var objects = [];
         for (var i = 0; i < chunk.length; i++) {
             var character = chunk[i];
