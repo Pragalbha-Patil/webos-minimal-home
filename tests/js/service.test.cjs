@@ -9,7 +9,7 @@ test('discovery validates data, filters duplicate/system IDs and preserves bookm
     s.respond({ returnValue: true, launchPoints: [null, {}, { id: 4 }, { id: '../bad' }, { id: C.SELF_ID },
         { id: 'a', title: 'Alpha' }, { id: 'a' }, { id: 'z', title: 4 }, { id: 'hidden', hidden: true },
         { id: 'system', systemApp: true }, { id: C.SETTINGS_ID, systemApp: true },
-        { id: 'port', lptype: 'bookmark', systemApp: true, params: { value: 4 } }] });
+        { id: 'port', lptype: 'bookmark', systemApp: true, params: { value: 4, id: 'wrong', unknown: true } }] });
     assert.deepEqual(replies[0].tiles.map(t => t.id), ['z', 'a', C.SETTINGS_ID]);
     assert.equal(replies[0].tiles.find(t => t.id === 'a').hidden, true);
     assert.equal(replies[0].tiles[0].title, 'z');
