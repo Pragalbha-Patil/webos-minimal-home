@@ -92,6 +92,8 @@ def check_markdown(name, path, errors):
     body = re.sub(r"```.*?```", "", path.read_text(encoding="utf-8"), flags=re.S)
     for target in re.findall(r"\[[^\]]*\]\(([^)]+)\)", body):
         check_link(name, path, target, errors)
+    for target in re.findall(r"(?m)^\s*\[[^\]]+\]:\s+(\S+)", body):
+        check_link(name, path, target, errors)
 
 
 def check_source(name, errors):

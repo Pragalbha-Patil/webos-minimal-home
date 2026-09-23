@@ -98,6 +98,16 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class MarkdownCheckTest(unittest.TestCase):
+    def test_reference_style_links_are_checked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "README.md"
+            path.write_text("[docs][missing]\n\n[missing]: missing.md\n", encoding="utf-8")
+            errors = []
+            check.check_markdown("README.md", path, errors)
+            self.assertRegex(errors[0], "missing link target")
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:
