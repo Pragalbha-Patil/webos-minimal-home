@@ -95,8 +95,10 @@ test('preference updates preserve unrelated values, sanitize lists, and report f
     const result = s.request('setPrefs', { pinned: ['a', 'a'], labels: 'true', dateFormat: 'HH:mm:ss' })[0];
     assert.equal(result.prefs.accent, 'amber'); assert.equal(result.prefs.labels, false);
     assert.deepEqual(result.prefs.pinned, ['a']); assert.equal(result.prefs.dateFormat, 'HH:mm:ss');
+    s.disk.errors.set('write', new Error('should not write'));
     assert.equal(s.request('setPrefs', null)[0].returnValue, true);
-    s.disk.errors.set('write', new Error('read-only')); assert.equal(s.request('setPrefs', {})[0].returnValue, false);
+    s.disk.errors.clear();
+    s.disk.errors.set('write', new Error('read-only')); assert.equal(s.request('setPrefs', { labels: true })[0].returnValue, false);
 });
 
 test('Home bypass persists on successful launch and is removed on failure or timeout', async () => {

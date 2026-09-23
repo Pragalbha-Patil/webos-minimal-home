@@ -222,6 +222,10 @@ register('getPrefs', function (payload, reply) {
 register('setPrefs', function (payload, reply) {
     var prefs = loadPrefs();
     var update = M.cleanPrefs(payload);
+    if (!Object.keys(update).length) {
+        reply({ returnValue: true, prefs: prefs });
+        return;
+    }
     Object.keys(update).forEach(function (key) {
         prefs[key] = update[key];
     });
