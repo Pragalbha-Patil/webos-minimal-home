@@ -173,6 +173,20 @@ class PackagingTest(unittest.TestCase):
             self.assertFalse(destination.exists())
 
 
+class CheckMarkdownTest(unittest.TestCase):
+    def test_file_links_with_single_quoted_titles_are_valid(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            doc = root / "README.md"
+            target = root / "docs" / "INSTALL.md"
+            target.parent.mkdir()
+            target.write_text("Install\n", encoding="utf-8")
+            doc.write_text("[Install](docs/INSTALL.md 'guide')\n", encoding="utf-8")
+            errors = []
+            check.check_markdown("README.md", doc, errors)
+            self.assertEqual(errors, [])
+
+
 class MergeConfigTest(unittest.TestCase):
     def test_custom_values_survive_and_new_schema_and_version_win(self):
         new = {
