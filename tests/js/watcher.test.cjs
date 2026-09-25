@@ -142,6 +142,17 @@ test('missing and malformed kernel counters produce unknown values without crash
     }
 });
 
+test('malformed CPU samples do not poison the next valid delta', () => {
+    const w = watcher();
+    w.disk.files.set('/proc/stat', 'cpu  x 0 0 0');
+    w.context.collectSystemStats();
+    w.disk.files.set('/proc/stat', 'cpu  100 0 100 800 20 10 10 0');
+    w.context.collectSystemStats();
+    w.disk.files.set('/proc/stat', 'cpu  120 0 110 850 30 15 15 0');
+    w.context.collectSystemStats();
+    assert.equal(JSON.parse(w.disk.files.get(C.STATS_FILE)).cpu, 40);
+});
+
 test('periodic provisioning requests launch points and copies the returned icons', async () => {
     const w = watcher(); w.disk.files.set('/icon', 'icon');
     const task = w.context.runProvision(); w.respond({ returnValue: true, launchPoints: [{ id: 'video', icon: '/icon' }] }); await task;

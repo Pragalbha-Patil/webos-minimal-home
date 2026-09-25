@@ -184,10 +184,18 @@ function readCpuUsage() {
         if (!m) return null;
         // Guest time is already included in user/nice; count only the first eight fields.
         var fields = m[1].trim().split(/\s+/).slice(0, 8).map(Number);
+        if (
+            fields.length < 4 ||
+            fields.some(function (value) {
+                return !isFinite(value);
+            })
+        )
+            return null;
         var idle = fields[3] + (fields[4] || 0);
         var total = fields.reduce(function (sum, value) {
             return sum + value;
         }, 0);
+        if (!isFinite(total) || !isFinite(idle) || total <= 0) return null;
         var usage = null;
         if (typeof lastCpuTotal === 'number' && total > lastCpuTotal) {
             var diffTotal = total - lastCpuTotal;
