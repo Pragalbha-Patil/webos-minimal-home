@@ -217,6 +217,7 @@ class InstallerTest(unittest.TestCase):
                         MH_TEST_BIN=self.bin.as_posix(),
                         MH_RESPONSE='{"returnValue":true}', MH_INSTALL_RESPONSE='{"state":"installed"}',
                         MH_SSH_EXIT="0", MH_SCP_EXIT="0",
+                        MH_CONFIG_PREFIX="",
                         MH_CONFIG_PRESENT="1",
                         MH_INSTALLED_CONFIG='{"version":"1.0.0","header":{"text":"Hello TV"},'
                         '"ui":{"system":[],"appsPriority":["custom.app"]}}')
@@ -237,6 +238,7 @@ class InstallerTest(unittest.TestCase):
                   '  *luna-send*) printf "%s\\n" "$MH_RESPONSE";;\n'
                   '  *"if test -f"*)\n'
                   '    if [ "$MH_CONFIG_PRESENT" = 1 ]; then\n'
+                  '      printf "%s" "$MH_CONFIG_PREFIX"\n'
                   '      printf "MINIMAL_HOME_CONFIG_PRESENT\\n%s" "$MH_INSTALLED_CONFIG"\n'
                   '    fi;;\n'
                   'esac\n')
@@ -363,6 +365,13 @@ class InstallerTest(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, target)
         result = self.install_script(release / "tools/install.sh")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Preserved installed Minimal Home configuration.", result.stdout)
+        self.assertEqual(self.log.read_text().splitlines().count("scp"), 1)
+
+    def test_ssh_banner_before_config_marker_is_ignored(self):
+        self.env["MH_CONFIG_PREFIX"] = "Authorized access only\n"
+        result = self.install("--no-build")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Preserved installed Minimal Home configuration.", result.stdout)
         self.assertEqual(self.log.read_text().splitlines().count("scp"), 1)

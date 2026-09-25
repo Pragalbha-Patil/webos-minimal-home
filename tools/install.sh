@@ -111,9 +111,10 @@ MERGED_CONFIG=$STAGE_DIR/config.merged.json
 # shellcheck disable=SC2029
 ssh "$REMOTE" "if test -f '$SVC_DIR/config.json'; then printf '%s\\n' MINIMAL_HOME_CONFIG_PRESENT; cat '$SVC_DIR/config.json'; fi" > "$FETCHED_CONFIG"
 if [ -s "$FETCHED_CONFIG" ]; then
-    [ "$(sed -n '1p' "$FETCHED_CONFIG")" = MINIMAL_HOME_CONFIG_PRESENT ] ||
+    CONFIG_MARKER_LINE=$(sed -n '/^MINIMAL_HOME_CONFIG_PRESENT$/=' "$FETCHED_CONFIG" | sed -n '1p')
+    [ -n "$CONFIG_MARKER_LINE" ] ||
         fail "unexpected response while reading installed config"
-    sed '1d' "$FETCHED_CONFIG" > "$INSTALLED_CONFIG"
+    sed -n "$((CONFIG_MARKER_LINE + 1)),\$p" "$FETCHED_CONFIG" > "$INSTALLED_CONFIG"
     "$PYTHON" tools/merge_config.py \
         "$STAGE_DIR/launcher-service/config.json" "$INSTALLED_CONFIG" "$MERGED_CONFIG"
     cp "$MERGED_CONFIG" "$STAGE_DIR/launcher-service/config.json"
