@@ -157,6 +157,17 @@ class PackagingTest(unittest.TestCase):
                 self.assertNotIn("usr/palm/applications/org.minimal.home/src/launcher.js", names)
                 self.assertNotIn("usr/palm/applications/org.minimal.home/tiles.json", names)
 
+    def test_ipk_rejects_invalid_app_version(self):
+        with tempfile.TemporaryDirectory() as temp:
+            staged = Path(temp) / "staged"
+            package.stage(staged)
+            appinfo = staged / "launcher-app/appinfo.json"
+            data = json.loads(appinfo.read_text(encoding="utf-8"))
+            data["version"] = "../../bad"
+            appinfo.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "MAJOR.MINOR.PATCH"):
+                make_ipk.build(staged, Path(temp) / "bad.ipk")
+
     def test_mismatched_tag_fails_before_build_or_packaging(self):
         with patch.object(package.subprocess, "run") as run:
             with self.assertRaises(SystemExit) as error:

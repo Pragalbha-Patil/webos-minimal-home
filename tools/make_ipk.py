@@ -5,10 +5,17 @@ import gzip
 import io
 import json
 from pathlib import Path
+import re
 import tarfile
 
 APP_ID = "org.minimal.home"
 SERVICE_ID = "org.minimal.home.service"
+
+
+def validate_version(version):
+    if not isinstance(version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        raise ValueError("version must be MAJOR.MINOR.PATCH")
+    return version
 
 
 def tar_gzip(entries):
@@ -48,7 +55,7 @@ def ar_member(name, data):
 
 def build(staged, destination):
     appinfo = json.loads((staged / "launcher-app/appinfo.json").read_text(encoding="utf-8"))
-    version = appinfo["version"]
+    version = validate_version(appinfo["version"])
     package_info = json.dumps({
         "id": APP_ID,
         "version": version,
