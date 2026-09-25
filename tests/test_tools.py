@@ -217,6 +217,7 @@ class InstallerTest(unittest.TestCase):
                         MH_TEST_BIN=self.bin.as_posix(),
                         MH_RESPONSE='{"returnValue":true}', MH_INSTALL_RESPONSE='{"state":"installed"}',
                         MH_SSH_EXIT="0", MH_SCP_EXIT="0",
+                        MH_LAUNCH_PREFIX="",
                         MH_CONFIG_PRESENT="1",
                         MH_INSTALLED_CONFIG='{"version":"1.0.0","header":{"text":"Hello TV"},'
                         '"ui":{"system":[],"appsPriority":["custom.app"]}}')
@@ -234,6 +235,8 @@ class InstallerTest(unittest.TestCase):
                   'case "$*" in\n'
                   '  *appInstallService*) printf "%s\\n" "$MH_INSTALL_RESPONSE"; '
                   'case "$MH_INSTALL_RESPONSE" in *failed*) exit 1;; esac;;\n'
+                  '  *applicationManager/launch*) printf "%s" "$MH_LAUNCH_PREFIX"; '
+                  'printf "%s\\n" "$MH_RESPONSE";;\n'
                   '  *luna-send*) printf "%s\\n" "$MH_RESPONSE";;\n'
                   '  *"if test -f"*)\n'
                   '    if [ "$MH_CONFIG_PRESENT" = 1 ]; then\n'
@@ -355,6 +358,12 @@ class InstallerTest(unittest.TestCase):
                         calls.find("applicationManager/launch"))
         self.assertEqual(calls.splitlines().count("scp"), 1)
         self.assertIn("Preserved installed Minimal Home configuration.", result.stdout)
+
+    def test_ssh_banner_before_launch_response_is_ignored(self):
+        self.env["MH_LAUNCH_PREFIX"] = "Authorized access only\n"
+        result = self.install("--no-build")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Minimal Home app, service, and watcher installed successfully.", result.stdout)
 
     def test_bundled_release_installer_preserves_config(self):
         release = self.root / "release"

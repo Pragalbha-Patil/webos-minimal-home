@@ -172,5 +172,13 @@ echo "Requesting launch of Minimal Home"
 # shellcheck disable=SC2029
 RESPONSE=$(ssh "$REMOTE" "watcher=\$(ps -eo pid,args | awk '\$2 == \"node\" && \$3 == \"$SVC_DIR/watcher.js\" {print \$1; exit}'); if test -n \"\$watcher\" && test -r \"/proc/\$watcher/environ\"; then xargs -0 env < \"/proc/\$watcher/environ\" luna-send -n 1 luna://com.webos.applicationManager/launch '{\"id\":\"org.minimal.home\"}'; else luna-send-pub -n 1 luna://com.webos.applicationManager/launch '{\"id\":\"org.minimal.home\"}'; fi")
 printf '%s\n' "$RESPONSE"
-printf '%s\n' "$RESPONSE" | "$PYTHON" -c 'import json,sys; sys.exit(0 if json.load(sys.stdin).get("returnValue") is True else 1)'
+printf '%s\n' "$RESPONSE" | "$PYTHON" -c 'import json,sys
+for line in sys.stdin:
+    try:
+        payload = json.loads(line)
+    except ValueError:
+        continue
+    if isinstance(payload, dict) and payload.get("returnValue") is True:
+        sys.exit(0)
+sys.exit(1)'
 echo "Minimal Home app, service, and watcher installed successfully."
