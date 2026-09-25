@@ -21,5 +21,10 @@ exit /b %ERRORLEVEL%
 "%ProgramFiles(x86)%\Git\bin\sh.exe" tools/install.sh %*
 exit /b %ERRORLEVEL%
 :use_wsl
-wsl sh tools/install.sh %*
+for /f "usebackq delims=" %%D in (`wsl wslpath -a "%CD%"`) do set "WSL_CWD=%%D"
+if not defined WSL_CWD (
+    echo error: WSL could not translate the repository path. 1>&2
+    exit /b 1
+)
+wsl sh -lc "cd ""$1"" && shift && exec sh tools/install.sh ""$@""" sh "%WSL_CWD%" %*
 exit /b %ERRORLEVEL%

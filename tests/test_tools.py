@@ -173,6 +173,14 @@ class PackagingTest(unittest.TestCase):
             self.assertFalse(destination.exists())
 
 
+class WindowsInstallerWrapperTest(unittest.TestCase):
+    def test_wsl_fallback_runs_from_translated_repository_path(self):
+        wrapper = (ROOT / "tools/install.cmd").read_text(encoding="utf-8").lower()
+        self.assertIn("wslpath -a", wrapper)
+        self.assertIn("cd \"\"$1\"\"", wrapper)
+        self.assertIn("exec sh tools/install.sh", wrapper)
+
+
 class MergeConfigTest(unittest.TestCase):
     def test_custom_values_survive_and_new_schema_and_version_win(self):
         new = {
