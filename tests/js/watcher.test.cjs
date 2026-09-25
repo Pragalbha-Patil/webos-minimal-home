@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { watcher, constants: C } = require('./helpers.cjs');
+const path = require('node:path');
+const { watcher, constants: C, memoryFs } = require('./helpers.cjs');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 
 test('watcher retries failed launches, coalesces repeated events and cancels on foreground change', async () => {
@@ -113,6 +114,26 @@ test('settings icon is bounded, skipped when identical and retried after read fa
     w.disk.files.set(C.SETTINGS_ICON, Buffer.alloc(300001)); w.context.provisionSettingsIcon();
     w.disk.files.set(C.SETTINGS_ICON, ''); w.context.provisionSettingsIcon();
     assert.equal(w.disk.files.get(icon).toString(), 'changed');
+});
+
+test('settings icon provisioning creates its destination directory', () => {
+    const disk = memoryFs({
+        [C.FIRSTUSE_FILE]: '',
+        [C.SETTINGS_ICON]: 'icon',
+        '/proc/stat': 'cpu  100 0 100 800 20 10 10 0',
+        '/proc/meminfo': 'MemTotal: 1000\nMemAvailable: 400'
+    });
+    const mkdirs = new Set();
+    const writeFileSync = disk.writeFileSync;
+    disk.mkdirSync = filename => { mkdirs.add(filename); };
+    disk.writeFileSync = (filename, value) => {
+        if (path.posix.dirname(filename) === C.APP_DIR + '/icons' && !mkdirs.has(C.APP_DIR + '/icons'))
+            throw new Error('ENOENT: icon directory missing');
+        writeFileSync(filename, value);
+    };
+    const w = watcher({ disk });
+    w.context.provisionSettingsIcon();
+    assert.equal(disk.files.get(C.APP_DIR + '/icons/' + C.SETTINGS_ID + '.png').toString(), 'icon');
 });
 
 test('stats use CPU deltas, recover after disabled periods and skip unreadable thermal zones', () => {

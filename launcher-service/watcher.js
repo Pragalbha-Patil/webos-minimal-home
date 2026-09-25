@@ -159,6 +159,7 @@ function provisionIcons(points) {
 
 function provisionSettingsIcon() {
     try {
+        fs.mkdirSync(ICON_DIR, { recursive: true });
         copyIcon(SETTINGS_ICON, path.join(ICON_DIR, SETTINGS_ID + '.png'));
     } catch (error) {
         log({ settingsIcon: String(error) });
