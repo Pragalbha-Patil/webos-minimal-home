@@ -697,6 +697,14 @@
     var revision = prefsRevision;
     function finish(response, error) {
       prefsSaving = false;
+      if (!error) {
+        // A newer edit may undo this write; diff it against what was saved,
+        // not the snapshot from before the in-flight request.
+        var saved = M.preferences(response.prefs);
+        Object.keys(payload).forEach(function (key) {
+          lastSavedPrefs[key] = saved[key];
+        });
+      }
       if (revision !== prefsRevision) {
         savePrefs();
         return;
@@ -711,7 +719,7 @@
       }
       runCompletions();
     }
-    var payload = diffPrefs(PREFS, lastSavedPrefs);
+    var payload = diffPrefs(M.preferences(PREFS), lastSavedPrefs);
     if (Object.keys(payload).length === 0) {
       finish({ prefs: PREFS }, null);
       return;

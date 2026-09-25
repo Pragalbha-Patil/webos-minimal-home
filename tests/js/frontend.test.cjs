@@ -391,9 +391,10 @@ test('late preference replies cannot overwrite a newer local edit', t => {
     app.prefs({ labels: true }); assert.equal(app.document.body.classList.contains('no-labels'), true);
     app.click('[data-key="labels"]');
     assert.equal(app.calls.filter(c => c.method === 'setPrefs').length, 1, 'writes must be serialized');
-    // The two toggles cancel out, so the follow-up save finds an empty diff
-    // and completes without a second request.
+    // The first toggle was persisted, so reverting it requires a second write.
     save(app); assert.equal(app.document.body.classList.contains('no-labels'), false);
+    assert.equal(app.calls.filter(c => c.method === 'setPrefs').length, 2);
+    save(app);
 });
 
 test('options Launch and Close rows work and unrelated overlay keys are ignored', t => {
@@ -853,7 +854,11 @@ test('rapid sort and accent edits keep the sort refresh after both saves', t => 
     app.click('#settingsBtn');
     app.click('[data-key="sort"]');
     app.click('[data-key="accent"]');
-    save(app); save(app);
+    save(app);
+    const second = app.calls.find(c => c.method === 'setPrefs' && !c.answered);
+    assert.deepEqual(Object.keys(second.parameters), ['accent']);
+    // The relay returns the full merged profile, not just the second patch.
+    app.respond('setPrefs', { returnValue: true, prefs: { sort: 'alpha', accent: second.parameters.accent } });
     assert.equal(app.calls.filter(c => c.method === 'getTiles').length, before + 1);
     app.tiles({ tiles: [video, alpha], inputs: [port] });
     assert.deepEqual(ids(app, 'grid'), ['alpha', 'video']);
@@ -873,13 +878,17 @@ test('editing before discovery completes sends only the edited preference', t =>
     assert.ok(app.document.body.classList.contains('no-labels'));
 });
 
-test('reverting an edit before the save completes sends no second request', t => {
+test('reverting an edit after dispatch compensates for the first persisted write', t => {
     const app = appFor(t); ready(app);
     app.click('#settingsBtn');
     app.click('[data-key="labels"]');
     app.click('[data-key="labels"]');
     save(app);
-    assert.equal(app.calls.filter(c => c.method === 'setPrefs').length, 1);
+    assert.equal(app.calls.filter(c => c.method === 'setPrefs').length, 2);
+    const second = app.calls.find(c => c.method === 'setPrefs' && !c.answered);
+    assert.equal(second.parameters.labels, true);
+    save(app);
+    assert.equal(app.document.body.classList.contains('no-labels'), false);
 });
 
 test('bundled preferences requested during a save cannot overwrite the saved value', t => {
