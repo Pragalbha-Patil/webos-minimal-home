@@ -93,4 +93,9 @@ No local test contacts a TV. Desktop tests cannot verify Luna authorization,
 service jailing, the TV's browser/Node compatibility, real input switching,
 remote key delivery, layout, or actual CPU/memory overhead. Use the
 [device checklist](../CONTRIBUTING.md#device-testing) and report the model and
+
+## Focused local checks
+
+Run `npm test -- --runInBand`, `python -m unittest discover -s tests`, and `python tools/check.py` before submitting changes.
+
 firmware tested when validating those behaviors.
