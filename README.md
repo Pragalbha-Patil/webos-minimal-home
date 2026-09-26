@@ -124,6 +124,17 @@ explains the enforced JavaScript coverage gates. Follow the
 [Code of Conduct](CODE_OF_CONDUCT.md); report vulnerabilities through
 [SECURITY.md](SECURITY.md).
 
+## Local verification
+
+After changing launcher inputs or templates, regenerate tracked output and run:
+
+```bash
+python build_launcher.py
+python tools/check.py
+```
+
+Include generated files whenever the build changes them.
+
 ## Limitations
 
 Root and Luna API availability vary by firmware. Desktop tests cannot establish
