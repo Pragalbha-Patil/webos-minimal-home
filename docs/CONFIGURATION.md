@@ -123,4 +123,9 @@ python build_launcher.py
 python tools/check.py
 ```
 
+
+## Validation
+
+Run `python tools/check.py` after editing JSON so malformed configuration is caught before packaging.
+
 Keep personal snapshots and credentials in the ignored `private/` directory.
