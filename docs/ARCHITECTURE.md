@@ -142,3 +142,7 @@ focus, visibility, and service events. The [testing guide](TESTING.md) describes
 the enforced coverage gates. These checks need neither root nor a TV. Desktop preview
 cannot verify Luna authorization, service jailing, input switching, or remote
 key delivery; those need device evidence.
+
+## Change boundaries
+
+Build-time validation belongs in `build_launcher.py` and `tools/check.py`; runtime validation belongs in `launcher-service/model.js` and service entry points.
