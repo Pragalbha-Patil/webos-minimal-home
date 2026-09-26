@@ -202,6 +202,13 @@ class MergeConfigTest(unittest.TestCase):
             with self.subTest(installed=installed), self.assertRaises(ValueError):
                 merge_config.merge_configs({"version": "2.0.0"}, installed)
 
+    def test_merge_result_does_not_share_new_config_nested_state(self):
+        new = {"header": {"brand": "Minimal Home"}, "ui": {"system": ["settings"]}}
+        merged = merge_config.merge_configs(new, {})
+        merged["header"]["brand"] = "Changed"
+        merged["ui"]["system"].append("extra")
+        self.assertEqual(new, {"header": {"brand": "Minimal Home"}, "ui": {"system": ["settings"]}})
+
 
 @unittest.skipUnless(SHELL, "POSIX sh is required for installer regression tests")
 class InstallerTest(unittest.TestCase):

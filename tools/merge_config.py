@@ -1,6 +1,7 @@
 """Merge an installed TV configuration onto a new release configuration."""
 
 import argparse
+import copy
 import json
 from pathlib import Path
 import sys
@@ -35,7 +36,7 @@ def _validate_custom_config(config):
 
 
 def _merge(new, installed, top_level=False):
-    result = dict(new)
+    result = copy.deepcopy(new)
     for key, value in installed.items():
         # The manifest and visible build version belong to the new release.
         if top_level and key == "version":
