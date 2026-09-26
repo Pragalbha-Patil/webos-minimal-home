@@ -142,6 +142,10 @@ relaunch, input switching, and the ten-minute LG Home bypass. Confirm the
 watcher is running only once. Icon provisioning starts immediately and repeats
 every five minutes. The installer briefly waits for that first pass before launch.
 
+## Dry-run path check
+
+Use `./tools/install.sh --check` to validate configured TV paths without building or uploading files.
+
 ## Troubleshooting
 
 | Symptom | Check |
