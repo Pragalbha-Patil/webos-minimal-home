@@ -127,4 +127,9 @@ luna-send -n 1 luna://org.minimal.home.service/getPrefs '{}'
 A missing-service or denied-method reply is a registration/permissions
 problem; see [installation and recovery](INSTALL.md#troubleshooting). The
 [architecture](ARCHITECTURE.md) and [configuration](CONFIGURATION.md) guides
+
+## Streaming responses
+
+Subscription endpoints can emit multiple JSON objects in one stdout read. Frame complete objects before parsing them.
+
 link here for the full contract.
