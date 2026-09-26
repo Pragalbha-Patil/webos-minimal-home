@@ -50,6 +50,8 @@ def _merge(new, installed, top_level=False):
 def merge_configs(new, installed):
     if not isinstance(new, dict):
         raise ValueError("new config must contain an object")
+    _validate_header(new.get("header"))
+    _validate_ui(new.get("ui"))
     _validate_custom_config(installed)
     return _merge(new, installed, top_level=True)
 

@@ -202,6 +202,12 @@ class MergeConfigTest(unittest.TestCase):
             with self.subTest(installed=installed), self.assertRaises(ValueError):
                 merge_config.merge_configs({"version": "2.0.0"}, installed)
 
+    def test_invalid_new_known_fields_are_rejected(self):
+        for new in ({"header": []}, {"header": {"brand": False}},
+                    {"ui": []}, {"ui": {"appsPriority": [False]}}):
+            with self.subTest(new=new), self.assertRaises(ValueError):
+                merge_config.merge_configs(new, {})
+
 
 @unittest.skipUnless(SHELL, "POSIX sh is required for installer regression tests")
 class InstallerTest(unittest.TestCase):
