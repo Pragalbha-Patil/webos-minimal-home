@@ -106,4 +106,9 @@ need to bump the version for every patch.
 This guide uses the clear setup, change, and review structure found in
 [Node.js's contribution guide](https://github.com/nodejs/node/blob/main/CONTRIBUTING.md)
 and [GitHub Docs' contribution guide](https://github.com/github/docs/blob/main/.github/CONTRIBUTING.md).
+
+## Pull request scope
+
+Keep each pull request focused on one behavior or documentation improvement. Include a regression test when changing runtime behavior.
+
 Project-specific requirements here are intentionally small.
