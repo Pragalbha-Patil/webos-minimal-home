@@ -29,7 +29,7 @@ jobs:
         run: |
           python tools/package.py --tag "$RELEASE_TAG"
           test -f "docs/releases/$RELEASE_TAG.md"
-      - uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 # v2.3.3
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: |
             dist/minimal-home-*.tar.gz
