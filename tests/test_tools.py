@@ -98,6 +98,13 @@ class BuildInputsTest(unittest.TestCase):
             bl.build('1.0.0";bad')
 
 
+class InlineScriptsTest(unittest.TestCase):
+    def test_script_type_matching_is_case_insensitive(self):
+        parser = check.InlineScripts()
+        parser.feed('<script type="Application/JavaScript">window.ok = true;</script>')
+        self.assertEqual(parser.scripts, ["window.ok = true;"])
+
+
 class PackagingTest(unittest.TestCase):
     def test_reproducible_archive_allowlist_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp:

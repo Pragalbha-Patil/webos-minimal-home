@@ -44,7 +44,8 @@ class InlineScripts(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "script":
             attrs = dict(attrs)
-            self.active = "src" not in attrs and attrs.get("type", "text/javascript") in (
+            script_type = attrs.get("type", "text/javascript").lower()
+            self.active = "src" not in attrs and script_type in (
                 "text/javascript", "application/javascript"
             )
             if self.active:
